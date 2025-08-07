@@ -456,7 +456,7 @@ class MainWindow:
 
             # Get existing emails
             for email in flagged_emails_root.Items:
-                existing_emails_in_store.add(email.Subject)
+                existing_emails_in_store.add(email.EntryID)
 
             total_emails = len(flagged_emails_in_month)
             copy_count = 0
@@ -473,7 +473,7 @@ class MainWindow:
                 )
 
                 # Update status
-                if flagged_email.Subject in existing_emails_in_store:
+                if flagged_email.EntryID in existing_emails_in_store:
                     progress_window.status_label.config(
                         text=f"Skipping: {flagged_email.Subject[:60]}..."
                     )

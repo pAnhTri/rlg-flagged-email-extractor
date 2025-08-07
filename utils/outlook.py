@@ -100,12 +100,13 @@ def copy_flagged_emails_to_pst(flagged_emails_in_month):
     existing_emails_in_store = set()
 
     for email in flagged_emails_root.Items:
-        existing_emails_in_store.add(email.Subject)
+        print(email.EntryID)
+        existing_emails_in_store.add(email.EntryID)
 
     copy_count = 0
 
     for flagged_email in flagged_emails_in_month:
-        if flagged_email.Subject in existing_emails_in_store:
+        if flagged_email.EntryID in existing_emails_in_store:
             print(f"Skipping {flagged_email.Subject}: Already exists!")
             continue
 
