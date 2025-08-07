@@ -454,9 +454,11 @@ class MainWindow:
 
             existing_emails_in_store = set()
 
-            # Get existing emails
+            # Get existing emails - use Subject + ReceivedTime for more reliable duplicate detection
             for email in flagged_emails_root.Items:
-                existing_emails_in_store.add(email.EntryID)
+                # Create a unique identifier using Subject and ReceivedTime
+                email_id = f"{email.Subject}_{email.ReceivedTime.strftime('%Y-%m-%d %H:%M:%S')}"
+                existing_emails_in_store.add(email_id)
 
             total_emails = len(flagged_emails_in_month)
             copy_count = 0
@@ -473,7 +475,8 @@ class MainWindow:
                 )
 
                 # Update status
-                if flagged_email.EntryID in existing_emails_in_store:
+                flagged_email_id = f"{flagged_email.Subject}_{flagged_email.ReceivedTime.strftime('%Y-%m-%d %H:%M:%S')}"
+                if flagged_email_id in existing_emails_in_store:
                     progress_window.status_label.config(
                         text=f"Skipping: {flagged_email.Subject[:60]}..."
                     )
