@@ -60,6 +60,13 @@ def get_flagged_emails_in_month(start: date = None, end: date = None):
     return flagged_emails_in_month, start_of_month, end_of_month
 
 
+def _does_store_exist(store_path):
+    for store in outlook.Stores:
+        if store.FilePath.lower() == store_path.lower():
+            return True
+    return False
+
+
 def get_flagged_emails_in_month_pst(start_of_month, end_of_month):
     flagged_emails_folder_name = f"Flagged Emails {start_of_month.strftime("%m-%d-%y")} - {end_of_month.strftime("%m-%d-%y")}"
 
@@ -69,7 +76,7 @@ def get_flagged_emails_in_month_pst(start_of_month, end_of_month):
     billing_path = os.path.join(parsed_path, flagged_emails_folder_name) + ".pst"
 
     # Only create the folder if it doesn't exist
-    if not os.path.exists(billing_path):
+    if not _does_store_exist(billing_path):
         outlook.AddStore(billing_path)
     else:
         print(f"Folder {flagged_emails_folder_name} already exists")
