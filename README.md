@@ -30,18 +30,31 @@ A Python-based GUI application for exporting flagged emails from Microsoft Outlo
    cd monthly-email-exporter
    ```
 
-2. **Create a virtual environment (recommended)**
+2. **Download Forest theme files**
+   ```bash
+   # Clone the Forest-ttk-theme repository
+   git clone https://github.com/rdbende/Forest-ttk-theme.git temp-forest
+   
+   # Copy the light theme files to the root directory
+   copy temp-forest\forest-light\* .
+   copy temp-forest\forest-light.tcl .
+   
+   # Clean up temporary directory
+   rmdir /s /q temp-forest
+   ```
+
+3. **Create a virtual environment (recommended)**
    ```bash
    python -m venv .venv
    .venv\Scripts\activate  # On Windows
    ```
 
-3. **Install dependencies**
+4. **Install dependencies**
    ```bash
    pip install -r requirements
    ```
 
-4. **Run the application**
+5. **Run the application**
    ```bash
    python gui.py
    ```
@@ -172,6 +185,10 @@ The executable will be created in the `dist/` directory.
 3. Make your changes
 4. Test thoroughly
 5. Submit a pull request
+
+## Acknowledgments
+
+This project uses the [Forest-ttk-theme](https://github.com/rdbende/Forest-ttk-theme) by [rdbende](https://github.com/rdbende) for the modern GUI styling. The Forest theme provides a beautiful, modern look inspired by MS Excel's design, making the application more visually appealing and user-friendly.
 
 ## Support
 

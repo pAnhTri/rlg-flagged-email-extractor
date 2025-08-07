@@ -192,3 +192,8 @@ email_exports/
 # Outlook PST files (if any are included)
 *.pst
 *.ost
+
+# Forest theme files (excluded as they should be downloaded separately)
+forest-light/
+forest-light.tcl
+*.png

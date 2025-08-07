@@ -28,10 +28,30 @@ class MainWindow:
         self,
         root,
         title: str = "Rad Law Group. APLC - Email Exporter",
-        height: int = 320,
+        height: int = 360,
         width: int = 240,
     ):
         self.root = root
+        self.style = ttk.Style(self.root)
+
+        # Import the tcl file
+        try:
+            # Try to find the tcl file in the PyInstaller bundle
+            if hasattr(sys, "_MEIPASS"):
+                tcl_path = os.path.join(sys._MEIPASS, "forest-light.tcl")
+            else:
+                tcl_path = "forest-light.tcl"
+
+            if os.path.exists(tcl_path):
+                self.root.tk.call("source", tcl_path)
+            else:
+                print(f"Warning: forest-light.tcl not found at {tcl_path}")
+        except Exception as e:
+            print(f"Error loading theme: {e}")
+
+        # Set the theme with the theme_use method
+        self.style.theme_use("forest-light")
+
         self.root.title(title)
         self.root.geometry(f"{width}x{height}")
 
@@ -53,23 +73,27 @@ class MainWindow:
     def set_window_icon(self):
         """Set the window icon to the RLG logo"""
         try:
-            # Try multiple possible locations for the icon file
-            possible_paths = [
-                os.path.join(os.path.dirname(__file__), "app.ico"),  # Development
-                os.path.join(
-                    os.path.dirname(sys.executable), "app.ico"
-                ),  # PyInstaller bundled
-                "app.ico",  # Current directory
-            ]
+            # Try to find the icon file in the PyInstaller bundle
+            if hasattr(sys, "_MEIPASS"):
+                icon_path = os.path.join(sys._MEIPASS, "app.ico")
+            else:
+                # Try multiple possible locations for the icon file
+                possible_paths = [
+                    os.path.join(os.path.dirname(__file__), "app.ico"),  # Development
+                    os.path.join(
+                        os.path.dirname(sys.executable), "app.ico"
+                    ),  # PyInstaller bundled
+                    "app.ico",  # Current directory
+                ]
 
-            icon_path = None
-            for path in possible_paths:
-                if os.path.exists(path):
-                    icon_path = path
-                    break
+                icon_path = None
+                for path in possible_paths:
+                    if os.path.exists(path):
+                        icon_path = path
+                        break
 
             # Check if the icon file exists
-            if icon_path:
+            if icon_path and os.path.exists(icon_path):
                 # Set the window icon using iconbitmap for .ico files
                 self.root.iconbitmap(icon_path)
                 print(f"Window icon set successfully: {icon_path}")
@@ -292,13 +316,13 @@ class MainWindow:
 
     def show_result(self):
         """Show the result of the Outlook check"""
-        self.progress.stop()
-
         if self.outlook_available:
             self.loading_label.config(text="Outlook connection successful!")
             self.status_label.config(text="Loading flagged emails...")
+            # Keep the progress bar running for the email loading process
             self.root.after(1000, self.load_flagged_emails)
         else:
+            self.progress.stop()  # Only stop if there's an error
             self.loading_label.config(text="Outlook connection failed!")
             self.status_label.config(
                 text="Please ensure Outlook is installed and running."
@@ -307,6 +331,10 @@ class MainWindow:
 
     def load_flagged_emails(self):
         """Load flagged emails after Outlook connection is confirmed"""
+        # Update loading text to show we're checking flagged emails
+        self.loading_label.config(text="Checking flagged emails...")
+        self.progress.start()  # Ensure progress bar is running
+
         try:
             # Use stored date values if available, otherwise use default
             if hasattr(self, "extract_start_date") and hasattr(
@@ -336,6 +364,9 @@ class MainWindow:
 
     def show_main_interface(self):
         """Hide loading widgets and show main interface"""
+        # Stop the progress bar before hiding it
+        self.progress.stop()
+
         # Hide loading widgets
         self.loading_label.pack_forget()
         self.progress.pack_forget()
