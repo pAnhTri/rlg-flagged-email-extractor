@@ -165,14 +165,6 @@ The executable will be created in the `dist/` directory.
    - Ensure the output folder exists and is writable
    - Check available disk space
 
-### Debug Mode
-
-For debugging, run the application with verbose output:
-
-```bash
-python gui.py --debug
-```
-
 ## Contributing
 
 1. Fork the repository
