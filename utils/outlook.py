@@ -28,20 +28,20 @@ def is_outlook_installed():
         return False
 
 
-def get_flagged_emails():
-    flagged_emails = []
-    for email in emails:
-        try:
-            if email.FlagStatus == 2:
-                flagged_emails.append(email)
-        except Exception as e:
-            print(f"Error: {e}")
-            continue
-    return flagged_emails
-
-
 def get_flagged_emails_in_month(start: date = None, end: date = None):
-    flagged_emails = get_flagged_emails()
+    global emails
+
+    restricted_emails = (
+        emails
+        if start is None and end is None
+        else emails.Restrict(
+            "[ReceivedTime] >= '"
+            + start.strftime("%m/%d/%Y")
+            + "' AND [ReceivedTime] <= '"
+            + end.strftime("%m/%d/%Y")
+            + "'"
+        )
+    )
 
     start_of_month = date.today().replace(day=1)
     _, num_days = calendar.monthrange(date.today().year, date.today().month)
@@ -52,10 +52,18 @@ def get_flagged_emails_in_month(start: date = None, end: date = None):
     timeframe_start = start or start_of_month
     timeframe_end = end or end_of_month
 
-    for email in flagged_emails:
-        received_date = email.ReceivedTime.date()
-        if received_date >= timeframe_start and received_date <= timeframe_end:
-            flagged_emails_in_month.append(email)
+    for email in restricted_emails:
+        try:
+            received_date = email.ReceivedTime.date()
+            if (
+                received_date >= timeframe_start
+                and received_date <= timeframe_end
+                and email.FlagStatus == 2
+            ):
+                flagged_emails_in_month.append(email)
+        except Exception as e:
+            print(f"Error: {e}")
+            continue
 
     return flagged_emails_in_month, start_of_month, end_of_month
 
