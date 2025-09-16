@@ -43,14 +43,22 @@ def get_flagged_emails_in_month(start: date = None, end: date = None):
         )
     )
 
-    start_of_month = date.today().replace(day=1)
-    _, num_days = calendar.monthrange(date.today().year, date.today().month)
-    end_of_month = date.today().replace(day=num_days)
+    # Use provided dates or default to current month
+    if start is None:
+        start_of_month = date.today().replace(day=1)
+    else:
+        start_of_month = start
+
+    if end is None:
+        _, num_days = calendar.monthrange(date.today().year, date.today().month)
+        end_of_month = date.today().replace(day=num_days)
+    else:
+        end_of_month = end
 
     flagged_emails_in_month = []
 
-    timeframe_start = start or start_of_month
-    timeframe_end = end or end_of_month
+    timeframe_start = start_of_month
+    timeframe_end = end_of_month
 
     for email in restricted_emails:
         try:
